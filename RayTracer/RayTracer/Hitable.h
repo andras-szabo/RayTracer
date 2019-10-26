@@ -1,7 +1,15 @@
 #pragma once
 #include "Ray.h"
+#include <vector>
 
 #define OUT
+
+enum class HitableType
+{
+	None,
+	Sphere,
+	Triangle
+};
 
 class HitInfo
 {
@@ -15,13 +23,19 @@ class AHitable
 {
 public:
 	virtual bool Raycast(const Ray& ray, OUT HitInfo& hitInfo) const = 0;
+	HitableType GetType() const { return type; }
+
+protected:
+	HitableType type;
 };
 
 class Triangle : public AHitable
 {
 public:
-	Triangle(const Vec3& a, const Vec3& b, const Vec3& c) : a{ a }, b{ b }, c{ c } 
+	Triangle(const Vec3& a, const Vec3& b, const Vec3& c) : a{ a }, b{ b }, c{ c }
 	{
+		type = HitableType::Triangle;
+
 		edgeAB = b - a;
 		edgeAC = c - a;
 		normal = edgeAB.Cross(edgeAC).Normalize();
@@ -47,7 +61,12 @@ private:
 class Sphere : public AHitable
 {
 public:
-	Sphere(const Vec3& origin, float radius) : origin{ origin }, radius{ radius } { squaredRadius = radius * radius; }
+	Sphere(const Vec3& origin, float radius) : origin{ origin }, radius{ radius } 
+	{ 
+		type = HitableType::Sphere;
+		squaredRadius = radius * radius; 
+	}
+
 	const Vec3& Origin() const { return origin; }
 	float Radius() const { return radius; }
 
@@ -61,4 +80,15 @@ private:
 	Vec3 origin;
 	float radius;
 	float squaredRadius;
+};
+
+class HitableList
+{
+public:
+	int Add(AHitable* hitable);
+	int Count() const { return hitables.size(); }
+	bool Raycast(const Ray& ray, OUT HitInfo& hit) const;
+
+private:
+	std::vector<AHitable*> hitables;
 };

@@ -257,5 +257,32 @@ namespace UnitTests
 
 			Assert::IsTrue(isHit);
 		}
+
+		TEST_METHOD(HitableLists)
+		{
+			auto hl = HitableList();
+
+			Sphere s1(Vec3(), 2.0f);
+			Sphere s2(Vec3(100.0f, 100.0f, 100.0f), 42.0f);
+
+			hl.Add(&s1);
+			hl.Add(&s2);
+
+			Assert::IsTrue(hl.Count() == 2);
+
+			Triangle tri(Vec3(10.0f, 10.0f, 10.0f), Vec3(10.0f, 12.0f, 10.0f), Vec3(14.0f, 8.0f, 14.0f));
+			hl.Add(&tri);
+
+			Assert::IsTrue(hl.Count() == 3);
+
+			Ray ray(Vec3(0.0f, 0.0f, -10.0f), Vec3::Forward());
+			HitInfo hit;
+			bool isHit = hl.Raycast(ray, OUT hit);
+
+			Assert::IsTrue(isHit);
+
+			ray = Ray(Vec3(0.0f, 0.0f, -10.0f), -Vec3::Forward());
+			Assert::IsFalse(hl.Raycast(ray, OUT hit));
+		}
 	};
 }

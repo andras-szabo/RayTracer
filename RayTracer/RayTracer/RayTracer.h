@@ -13,4 +13,5 @@ void PrintColorTestTo(int width, int height, std::ostream& stream);
 void PrintSimpleBackgroundTestTo(int width, int height, std::ostream& stream);
 void PrintSimpleSphereTestTo(int width, int height, std::ostream& stream);
 void PrintSimpleTriangleTestTo(int width, int height, std::ostream& stream);
+void PrintSimpleWorldTestTo(int width, int height, std::ostream& stream);
 float Lerpf(float a, float b, float normalizedValue);

@@ -7,7 +7,7 @@ bool Triangle::Raycast(const Ray& ray, OUT HitInfo& hitInfo) const
 {
 	// Moeller - Trumbore algorithm, as found on Wikipedia (https://en.wikipedia.org/wiki/Möller–Trumbore_intersection_algorithm),
 	// with added backface check
-	
+
 	if (hitInfo.ignoreBackFaces && ray.Direction().Dot(normal) > 0.0f)
 	{
 		return false;
@@ -112,3 +112,38 @@ bool Sphere::Raycast(const Ray& ray, OUT HitInfo& hitInfo) const
 
 	return t > 0.0f;
 }
+
+bool HitableList::Raycast(const Ray& ray, OUT HitInfo& hitInfo) const
+{
+	float closestHitDistanceSquared = -1.0f;
+	HitInfo closestHit;
+
+	for (const auto& hitable : hitables)
+	{
+		if (hitable->Raycast(ray, OUT hitInfo))
+		{
+			float dstSquared = (ray.Origin() - hitInfo.point).SqrMagnitude();
+			if (closestHitDistanceSquared < 0.0f || closestHitDistanceSquared > dstSquared)
+			{
+				closestHit = hitInfo;
+				closestHitDistanceSquared = dstSquared;
+			}
+		}
+	}
+
+	if (closestHitDistanceSquared > 0.0f)
+	{
+		hitInfo = closestHit;
+		return true;
+	}
+
+	return false;
+}
+
+int HitableList::Add(AHitable* hitablePtr)
+{
+	hitables.push_back(hitablePtr);
+	return hitables.size();
+}
+
+

@@ -5,13 +5,15 @@ int main()
 {
 	Stopwatch s("Main", true);
 	OutputFile imageFile("test.ppm");
-	PrintSimpleTriangleTestTo(320, 200, imageFile.GetStream());
+	PrintSimpleWorldTestTo(320, 200, imageFile.GetStream());
 }
 
 float Lerpf(float a, float b, float normalizedValue)
 {
 	return (1.0f - normalizedValue) * a + normalizedValue * b;
 }
+
+
 
 void PrintSimpleBackgroundTestTo(int width, int height, std::ostream& stream)
 {
@@ -30,7 +32,10 @@ void PrintSimpleBackgroundTestTo(int width, int height, std::ostream& stream)
 			color.PrintRGB(stream);
 		}
 	}
+}
 
+void PrintSimpleWorldTestTo(int width, int height, std::ostream& stream)
+{
 }
 
 void PrintSimpleSphereTestTo(int width, int height, std::ostream & stream)
