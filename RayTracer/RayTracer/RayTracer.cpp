@@ -48,24 +48,38 @@ void PrintSimpleSphereTestTo(int width, int height, std::ostream & stream)
 	HitInfo hit;
 	Vec3 hitColor(1.0f, 0.2f, 0.2f);
 
+	const int AA_SAMPLE_COUNT = 32;
+	std::random_device randomDevice;
+	std::default_random_engine randEngine(randomDevice());
+	std::uniform_real_distribution<float> randomDistribution(0.0f, 1.0f);
+
 	for (int j = 0; j < height; ++j)
 	{
 		for (int i = 0; i < width; ++i)
 		{
-			Vec3 pixel = screenLowerLeft + Vec3(i * u, j * v, 0.0f);
-			Vec3 direction = pixel - origin;
-			Ray ray(origin, direction);
-			bool isHit = sphere.Raycast(ray, OUT hit);
-			if (isHit)
+			Vec3 pixelColor;
+
+			for (int k = 0; k < AA_SAMPLE_COUNT; ++k)
 			{
-				Vec3 normalClamped = hit.normal / 2.0f + Vec3(0.5f, 0.5f, 0.5f);
-				Vec3(normalClamped.x(), normalClamped.y(), 1.0f - normalClamped.z()).PrintRGB(stream);
+				float randomDx = randomDistribution(randEngine);
+				float randomDy = randomDistribution(randEngine);
+
+				Vec3 pixel = screenLowerLeft + Vec3((i + randomDx) * u, (j + randomDy) * v, 0.0f);
+				Vec3 direction = pixel - origin;
+				Ray ray(origin, direction);
+				bool isHit = sphere.Raycast(ray, OUT hit);
+				if (isHit)
+				{
+					Vec3 normalClamped = hit.normal / 2.0f + Vec3(0.5f, 0.5f, 0.5f);
+					pixelColor += Vec3(normalClamped.x(), normalClamped.y(), 1.0f - normalClamped.z());
+				}
+				else
+				{
+					pixelColor += Vec3((float)i / (float)width, (float)j / (float)height, 0.2f);
+				}
 			}
-			else
-			{
-				Vec3 color((float)i / (float)width, (float)j / (float)height, 0.2f);
-				color.PrintRGB(stream);
-			}
+
+			(pixelColor / (float)AA_SAMPLE_COUNT).PrintRGB(stream);
 		}
 	}
 }

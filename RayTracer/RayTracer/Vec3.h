@@ -70,6 +70,15 @@ public:
 		return Vec3(val[0] / scalar, val[1] / scalar, val[2] / scalar);
 	}
 
+	inline Vec3& operator+=(const Vec3& other)
+	{
+		val[0] += other.val[0];
+		val[1] += other.val[1];
+		val[2] += other.val[2];
+
+		return *this;
+	}
+
 	inline float Dot(const Vec3& other) const
 	{
 		return val[0] * other.val[0] + val[1] * other.val[1] + val[2] * other.val[2];

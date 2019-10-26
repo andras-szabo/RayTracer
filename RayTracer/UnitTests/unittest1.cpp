@@ -161,6 +161,14 @@ namespace UnitTests
 			Assert::IsTrue(b == Vec3(-1.0f, 1.0f, -1.0f));
 		}
 
+		TEST_METHOD(Vec3AddShorthand)
+		{
+			Vec3 a(1.0f, 1.0f, 1.0f);
+			a += Vec3(1.0f, 0.0f, -1.0f);
+
+			Assert::IsTrue(a == Vec3(2.0f, 1.0f, 0.0f));
+		}
+
 		TEST_METHOD(RayBasicTests)
 		{
 			auto ray = Ray(Vec3(), Vec3::Up());

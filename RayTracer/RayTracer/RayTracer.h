@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <random>
 #include "Ray.h"
 #include "Hitable.h"
 
