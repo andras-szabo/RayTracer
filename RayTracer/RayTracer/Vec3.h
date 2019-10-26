@@ -79,6 +79,19 @@ public:
 		return *this;
 	}
 
+	inline Vec3 Cross(const Vec3& other) const
+	{
+		// xyzzy
+		float x = val[0];				float y = val[1];				float z = val[2];
+		float otherX = other.val[0];	float otherY = other.val[1];	float otherZ = other.val[2];
+
+		float cx = y * otherZ - z * otherY;
+		float cy = z * otherX - x * otherZ;
+		float cz = x * otherY - y * otherX;
+
+		return Vec3(cx, cy, cz);
+	}
+
 	inline float Dot(const Vec3& other) const
 	{
 		return val[0] * other.val[0] + val[1] * other.val[1] + val[2] * other.val[2];

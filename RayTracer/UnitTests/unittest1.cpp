@@ -169,6 +169,22 @@ namespace UnitTests
 			Assert::IsTrue(a == Vec3(2.0f, 1.0f, 0.0f));
 		}
 
+		TEST_METHOD(Vec3Cross)
+		{
+			Vec3 a(0.0f, 0.0f, 1.0f);
+			Vec3 b(0.0f, 1.0f, 0.0f);
+
+			auto aXb = a.Cross(b);
+			auto bXa = b.Cross(a);
+
+			Assert::IsFalse(aXb == bXa);
+			Assert::IsTrue(aXb.Length() == 1.0f);
+			Assert::IsTrue(bXa.Length() == 1.0f);
+
+			Assert::IsTrue(aXb == Vec3(-1.0f, 0.0f, 0.0f));
+			Assert::IsTrue(bXa == Vec3(1.0f, 0.0f, 0.0f));
+		}
+
 		TEST_METHOD(RayBasicTests)
 		{
 			auto ray = Ray(Vec3(), Vec3::Up());
@@ -176,6 +192,30 @@ namespace UnitTests
 			Assert::IsTrue(ray.At(1.0f) == Vec3(0.0f, 1.0f, 0.0f));
 			Assert::IsTrue(ray.At(-1.0f) == Vec3(0.0f, -1.0f, 0.0f));
 			Assert::IsTrue(ray.At(2.0f) == Vec3(0.0f, 2.0f, 0.0f));
+		}
+
+		TEST_METHOD(TriangleBasicTests)
+		{
+			auto tri = Triangle(Vec3(), Vec3(0.0f, 1.0f, 0.0f), Vec3(1.0f, 0.5f, 0.0f));
+			auto ray = Ray(Vec3(0.0f, 0.0f, -5.0f), Vec3::Forward());
+			auto hitInfo = HitInfo();
+			bool isHit = tri.Raycast(ray, OUT hitInfo);
+
+			Assert::IsTrue(isHit);
+			Assert::IsTrue(hitInfo.point == Vec3());
+			Assert::IsTrue(hitInfo.normal == -Vec3::Forward());
+		}
+
+		TEST_METHOD(TriangleBackfaceTest)
+		{
+			auto tri = Triangle(Vec3(), Vec3(0.0f, 1.0f, 0.0f), Vec3(1.0f, 0.5f, 0.0f));
+			auto ray = Ray(Vec3(0.0f, 0.0f, 5.0f), -Vec3::Forward());
+			auto hitInfo = HitInfo();
+			bool isHit = tri.Raycast(ray, OUT hitInfo);
+
+			// The ray should hit, but it should hit a backface!
+
+			Assert::IsFalse(isHit);
 		}
 		
 		TEST_METHOD(SphereBasicTests)
@@ -200,6 +240,22 @@ namespace UnitTests
 			r = Ray(Vec3(0.0f, -5.0f, 0.0f), -Vec3::Up());
 			isHit = s.Raycast(r, OUT hitInfo);
 			Assert::IsFalse(isHit, hitInfo.point.ToWString().c_str());
+		}
+
+		TEST_METHOD(SphereBackfaceTest)
+		{
+			auto s = Sphere(Vec3(), 2.0f);
+			auto r = Ray(Vec3(), Vec3::Forward());
+			auto hitInfo = HitInfo();
+			bool isHit = s.Raycast(r, OUT hitInfo);
+
+			Assert::IsFalse(isHit);
+
+			hitInfo.ignoreBackFaces = false;
+
+			isHit = s.Raycast(r, OUT hitInfo);
+
+			Assert::IsTrue(isHit);
 		}
 	};
 }
