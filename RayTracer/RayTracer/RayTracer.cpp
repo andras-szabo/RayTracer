@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <iostream>
+#include <sstream>
 #include "RayTracer.h"
 
 int main()
@@ -9,5 +10,7 @@ int main()
 
 std::string CreatePPMHeader(int width, int height)
 {
-	return std::string();
+	std::ostringstream headerStream;
+	headerStream << "P3\n" << width << " " << height << "\n255\n";
+	return headerStream.str();
 }
