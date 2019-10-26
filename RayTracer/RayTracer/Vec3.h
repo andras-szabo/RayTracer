@@ -9,6 +9,14 @@ public:
 	static Vec3 Up() { return Vec3(0.0f, 1.0f, 0.0f); }
 	static Vec3 Forward() { return Vec3(0.0f, 0.0f, 1.0f); }
 	static Vec3 Right() { return Vec3(1.0f, 0.0f, 0.0f); }
+	
+	static Vec3 Lerp(const Vec3& a, const Vec3& b, float normalizedValue)
+	{
+		float oneMinusNormalizedValue = 1.0f - normalizedValue;
+		return Vec3(oneMinusNormalizedValue * a.val[0] + normalizedValue * b.val[0],
+					oneMinusNormalizedValue * a.val[1] + normalizedValue * b.val[1],
+					oneMinusNormalizedValue * a.val[2] + normalizedValue * b.val[2]);
+	}
 
 	Vec3() : val{ 0.0f, 0.0f, 0.0f } {}
 	Vec3(float x, float y, float z) : val{ x, y, z } {}

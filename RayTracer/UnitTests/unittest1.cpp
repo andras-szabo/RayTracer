@@ -143,6 +143,16 @@ namespace UnitTests
 			Assert::IsTrue(b.Normalize() == n);
 		}
 
+		TEST_METHOD(Vec3LerpTest)
+		{
+			auto a = Vec3();
+			auto b = Vec3(1.0f, 1.0f, 1.0f);
+
+			Assert::IsTrue(Vec3::Lerp(a, b, 0.0f) == a);
+			Assert::IsTrue(Vec3::Lerp(a, b, 0.5f) == Vec3(0.5f, 0.5f, 0.5f));
+			Assert::IsTrue(Vec3::Lerp(a, b, 1.0f) == b);
+		}
+
 		TEST_METHOD(RayBasicTests)
 		{
 			auto ray = Ray(Vec3(), Vec3::Up());
