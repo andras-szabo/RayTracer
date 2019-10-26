@@ -7,6 +7,7 @@ class HitInfo
 {
 public:
 	Vec3 point;
+	Vec3 normal;
 };
 
 class AHitable

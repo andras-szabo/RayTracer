@@ -58,7 +58,8 @@ void PrintSimpleSphereTestTo(int width, int height, std::ostream & stream)
 			bool isHit = sphere.Raycast(ray, OUT hit);
 			if (isHit)
 			{
-				hitColor.PrintRGB(stream);
+				Vec3 normalClamped = hit.normal / 2.0f + Vec3(0.5f, 0.5f, 0.5f);
+				Vec3(normalClamped.x(), normalClamped.y(), 1.0f - normalClamped.z()).PrintRGB(stream);
 			}
 			else
 			{

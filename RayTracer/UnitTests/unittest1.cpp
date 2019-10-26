@@ -181,11 +181,13 @@ namespace UnitTests
 			bool isHit = s.Raycast(r, OUT hitInfo);
 			Assert::IsTrue(isHit);
 			Assert::IsTrue(hitInfo.point == Vec3(0.0f, 0.0f, -2.0f), hitInfo.point.ToWString().c_str());
+			Assert::IsTrue(hitInfo.normal == -Vec3::Forward());
 
 			r = Ray(Vec3(0.0f, -5.0f, 0.0f), Vec3::Up());
 			isHit = s.Raycast(r, OUT hitInfo);
 			Assert::IsTrue(isHit);
 			Assert::IsTrue(hitInfo.point == Vec3(0.0f, -2.0f, 0.0f));
+			Assert::IsTrue(hitInfo.normal == -Vec3::Up());
 
 			r = Ray(Vec3(0.0f, -5.0f, 0.0f), -Vec3::Up());
 			isHit = s.Raycast(r, OUT hitInfo);

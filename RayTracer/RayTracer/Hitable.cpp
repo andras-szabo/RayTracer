@@ -42,6 +42,7 @@ bool Sphere::Raycast(const Ray& ray, OUT HitInfo& hitInfo) const
 		t = t0 < t1 ? t0 : t1;
 
 		hitInfo.point = ray.At(t);
+		hitInfo.normal = (hitInfo.point - origin).Normalize();
 	}
 
 	return t > 0.0f;
