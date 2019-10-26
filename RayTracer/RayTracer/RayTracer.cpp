@@ -1,6 +1,4 @@
 #include "pch.h"
-#include <iostream>
-#include <sstream>
 #include "RayTracer.h"
 
 int main()
@@ -13,4 +11,9 @@ std::string CreatePPMHeader(int width, int height)
 	std::ostringstream headerStream;
 	headerStream << "P3\n" << width << " " << height << "\n255\n";
 	return headerStream.str();
+}
+
+void PrintRGB(float r, float g, float b, std::ostream & stream)
+{
+	stream << (int)(255.0f * r) << " " << (int)(255.0f * g) << " " << (int)(255.0f * b) << "\n";
 }
