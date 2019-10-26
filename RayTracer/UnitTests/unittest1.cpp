@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
+#include "../RayTracer/RayTracer.h"
+#include <string>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -9,10 +11,10 @@ namespace UnitTests
 	{
 	public:
 		
-		TEST_METHOD(TestMethod1)
+		TEST_METHOD(CreatePPMHeaderTest)
 		{
-			// TODO: Your test code here
+			auto header = CreatePPMHeader(200, 100);
+			Assert::AreEqual(header, std::string("P3\n200 100\n255\n"));
 		}
-
 	};
 }
