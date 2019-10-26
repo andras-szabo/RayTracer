@@ -5,7 +5,7 @@ int main()
 {
 	Stopwatch s("Main", true);
 	OutputFile imageFile("test.ppm");
-	PrintSimpleSphereTestTo(320, 200, imageFile.GetStream());
+	PrintSimpleTriangleTestTo(320, 200, imageFile.GetStream());
 }
 
 float Lerpf(float a, float b, float normalizedValue)
@@ -43,7 +43,7 @@ void PrintSimpleSphereTestTo(int width, int height, std::ostream & stream)
 	float v = unitHeight / height;
 
 	Vec3 screenLowerLeft(-(float) unitWidth / 2.0f, -(float) unitHeight / 2.0f, 1.0f);
-	Sphere sphere(Vec3(0.0f, 0.0f, 1.0f), 0.5f);
+	Sphere sphere(Vec3(0.0f, 0.5f, 1.0f), 0.5f);
 
 	stream << CreatePPMHeader(width, height);
 
@@ -55,7 +55,7 @@ void PrintSimpleSphereTestTo(int width, int height, std::ostream & stream)
 	std::default_random_engine randEngine(randomDevice());
 	std::uniform_real_distribution<float> randomDistribution(0.0f, 1.0f);
 
-	for (int j = 0; j < height; ++j)
+	for (int j = height - 1; j >= 0; --j)
 	{
 		for (int i = 0; i < width; ++i)
 		{
@@ -82,6 +82,46 @@ void PrintSimpleSphereTestTo(int width, int height, std::ostream & stream)
 			}
 
 			(pixelColor / (float)AA_SAMPLE_COUNT).PrintRGB(stream);
+		}
+	}
+}
+
+void PrintSimpleTriangleTestTo(int width, int height, std::ostream & stream)
+{
+	Vec3 origin;
+
+	float unitWidth = width / 100.0f;
+	float unitHeight = height / 100.0f;
+	float u = unitWidth / width;
+	float v = unitHeight / height;
+
+	Vec3 screenLowerLeft(-(float)unitWidth / 2.0f, -(float)unitHeight / 2.0f, 1.0f);
+	Triangle tri(Vec3(0.2f, 0.0f, 1.0f), Vec3(0.0f, 1.0f, 1.0f), Vec3(1.0f, 0.5f, 1.0f));
+
+	stream << CreatePPMHeader(width, height);
+	HitInfo hit;
+	Vec3 hitColor(1.0f, 0.2f, 0.2f);
+
+	for (int j = height - 1; j >= 0; --j)
+	{
+		for (int i = 0; i < width; ++i)
+		{
+			Vec3 pixelColor;
+
+			Vec3 pixel = screenLowerLeft + Vec3(i * u, j * v, 0.0f);
+			Vec3 direction = pixel - origin;
+			Ray ray(origin, direction);
+			bool isHit = tri.Raycast(ray, OUT hit);
+			if (isHit)
+			{
+				pixelColor = hitColor;
+			}
+			else
+			{
+				pixelColor = Vec3((float)i / (float)width, (float)j / (float)height, 0.2f);
+			}
+
+			pixelColor.PrintRGB(stream);
 		}
 	}
 }
