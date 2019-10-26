@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "RayTracer.h"
+#include "Vec3.h"
 
 int main()
 {
@@ -14,10 +15,8 @@ void PrintTestTo(int width, int height, std::ostream& stream)
 	{
 		for (int i = 0; i < width; ++i)
 		{
-			float r = (float)i / (float)width;
-			float g = (float)j / (float)height;
-			float b = 0.2f;
-			PrintRGB(r, g, b, stream);
+			Vec3 color((float)i / (float)width, (float)j / (float)height, 0.2f);
+			color.PrintRGB(stream);
 		}
 	}
 }

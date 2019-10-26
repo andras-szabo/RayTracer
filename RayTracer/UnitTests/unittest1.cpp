@@ -29,6 +29,24 @@ namespace UnitTests
 			Assert::AreEqual(stream.str(), std::string("0 255 255\n127 0 25\n"));
 		}
 
+		TEST_METHOD(Vec3RGBTest)
+		{
+			auto a = Vec3(1.0f, 0.0f, 0.0f);
+			auto b = Vec3(0.5f, 0.0f, 0.1f);
+
+			Assert::IsTrue(a.RGB() == a * 255.0f);
+			Assert::IsTrue(b.RGB() == b * 255.0f);
+		}
+
+		TEST_METHOD(Vec3AsRgbToStreamTest)
+		{
+			std::ostringstream stream;
+			auto a = Vec3(1.0f, 0.0f, 0.0f);
+			a.PrintRGB(stream);
+			Assert::AreEqual(std::string("255 0 0\n"), stream.str());
+		}
+
+
 		TEST_METHOD(Vec3CtorTest)
 		{
 			auto v = Vec3();

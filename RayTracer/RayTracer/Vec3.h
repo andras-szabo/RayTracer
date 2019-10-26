@@ -1,5 +1,6 @@
 #pragma once
 #include <math.h>
+#include <iostream>
 
 class Vec3
 {
@@ -75,6 +76,22 @@ public:
 		return *this;
 	}
 
+	inline Vec3 RGB() const
+	{
+		return Vec3(val[0] * 255.0f, val[1] * 255.0f, val[2] * 255.0f);
+	}
+
+	inline void PrintRGB(std::ostream& stream) const
+	{
+		stream << (int)(val[0] * 255.0f) << " " << (int)(val[1] * 255.0f) << " " << (int)(val[2] * 255.0f) << "\n";
+	}
+
 private:
 	float val[3];
 };
+
+inline std::ostream& operator<<(std::ostream& stream, const Vec3& v)
+{
+	stream << v.x() << " " << v.y() << " " << v.z();
+	return stream;
+}
