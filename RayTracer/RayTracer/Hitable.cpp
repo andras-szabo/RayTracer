@@ -36,8 +36,9 @@ bool Sphere::Raycast(const Ray& ray, OUT HitInfo& hitInfo) const
 
 	if (d > 0.0f)
 	{
-		float t0 = (-b + sqrtf(d)) / (a * 2.0f);
-		float t1 = (-b - sqrtf(d)) / (a * 2.0f);
+		float sqrt = sqrtf(d);
+		float t0 = (-b + sqrt) / (a * 2.0f);
+		float t1 = (-b - sqrt) / (a * 2.0f);
 
 		t = t0 < t1 ? t0 : t1;
 

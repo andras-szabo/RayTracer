@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <random>
+#include "Utilities.h"
 #include "Ray.h"
 #include "Hitable.h"
 

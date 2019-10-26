@@ -3,7 +3,9 @@
 
 int main()
 {
-	PrintSimpleSphereTestTo(320, 200, std::cout);
+	Stopwatch s("Main", true);
+	OutputFile imageFile("test.ppm");
+	PrintSimpleSphereTestTo(320, 200, imageFile.GetStream());
 }
 
 float Lerpf(float a, float b, float normalizedValue)
