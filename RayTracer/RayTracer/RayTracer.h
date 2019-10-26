@@ -5,3 +5,4 @@
 
 std::string CreatePPMHeader(int width, int height);
 void PrintRGB(float r, float g, float b, std::ostream& stream);
+void PrintTestTo(int width, int height, std::ostream& stream);
