@@ -3,6 +3,7 @@
 #include "../RayTracer/RayTracer.h"
 #include "../RayTracer/Vec3.h"
 #include "../RayTracer/Ray.h"
+#include "../RayTracer/Hitable.h"
 #include <string>
 #include <sstream>
 
@@ -46,7 +47,6 @@ namespace UnitTests
 			a.PrintRGB(stream);
 			Assert::AreEqual(std::string("255 0 0\n"), stream.str());
 		}
-
 
 		TEST_METHOD(Vec3CtorTest)
 		{
@@ -153,6 +153,14 @@ namespace UnitTests
 			Assert::IsTrue(Vec3::Lerp(a, b, 1.0f) == b);
 		}
 
+		TEST_METHOD(Vec3UnaryMinus)
+		{
+			Vec3 a(1.0f, -1.0f, 1.0f);
+			Vec3 b = -a;
+
+			Assert::IsTrue(b == Vec3(-1.0f, 1.0f, -1.0f));
+		}
+
 		TEST_METHOD(RayBasicTests)
 		{
 			auto ray = Ray(Vec3(), Vec3::Up());
@@ -162,5 +170,26 @@ namespace UnitTests
 			Assert::IsTrue(ray.At(2.0f) == Vec3(0.0f, 2.0f, 0.0f));
 		}
 		
+		TEST_METHOD(SphereBasicTests)
+		{
+			auto s = Sphere(Vec3(), 2.0f);
+			Assert::IsTrue(s.Radius() == 2.0f);
+			Assert::IsTrue(s.Origin() == Vec3());
+
+			auto r = Ray(Vec3(0.0f, 0.0f, -5.0f), Vec3::Forward());
+			auto hitInfo = HitInfo();
+			bool isHit = s.Raycast(r, OUT hitInfo);
+			Assert::IsTrue(isHit);
+			Assert::IsTrue(hitInfo.point == Vec3(0.0f, 0.0f, -2.0f), hitInfo.point.ToWString().c_str());
+
+			r = Ray(Vec3(0.0f, -5.0f, 0.0f), Vec3::Up());
+			isHit = s.Raycast(r, OUT hitInfo);
+			Assert::IsTrue(isHit);
+			Assert::IsTrue(hitInfo.point == Vec3(0.0f, -2.0f, 0.0f));
+
+			r = Ray(Vec3(0.0f, -5.0f, 0.0f), -Vec3::Up());
+			isHit = s.Raycast(r, OUT hitInfo);
+			Assert::IsFalse(isHit, hitInfo.point.ToWString().c_str());
+		}
 	};
 }

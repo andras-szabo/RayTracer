@@ -1,6 +1,8 @@
 #pragma once
 #include <math.h>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 class Vec3
 {
@@ -41,6 +43,11 @@ public:
 		return	other.val[0] != val[0] ||
 				other.val[1] != val[1] ||
 				other.val[2] != val[2];
+	}
+
+	inline Vec3 operator-() const
+	{
+		return Vec3(-val[0], -val[1], -val[2]);
 	}
 
 	inline Vec3 operator+(const Vec3& other) const
@@ -87,6 +94,14 @@ public:
 		val[2] /= len;
 
 		return *this;
+	}
+
+	inline std::wstring ToWString() const
+	{
+		std::ostringstream oss;
+		oss << val[0] << "; " << val[1] << "; " << val[2] << ";\n";
+		auto str = oss.str();
+		return std::wstring(str.begin(), str.end());
 	}
 
 	inline Vec3 RGB() const
