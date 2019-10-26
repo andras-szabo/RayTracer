@@ -5,6 +5,11 @@
 class Vec3
 {
 public:
+	// Using a left-handed coordinate system, like Unity
+	static Vec3 Up() { return Vec3(0.0f, 1.0f, 0.0f); }
+	static Vec3 Forward() { return Vec3(0.0f, 0.0f, 1.0f); }
+	static Vec3 Right() { return Vec3(1.0f, 0.0f, 0.0f); }
+
 	Vec3() : val{ 0.0f, 0.0f, 0.0f } {}
 	Vec3(float x, float y, float z) : val{ x, y, z } {}
 	

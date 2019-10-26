@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include "../RayTracer/RayTracer.h"
 #include "../RayTracer/Vec3.h"
+#include "../RayTracer/Ray.h"
 #include <string>
 #include <sstream>
 
@@ -140,7 +141,15 @@ namespace UnitTests
 			auto b = Vec3(2.0f, 14.0f, -3.0f);
 			auto n = b / b.Length();
 			Assert::IsTrue(b.Normalize() == n);
+		}
 
+		TEST_METHOD(RayBasicTests)
+		{
+			auto ray = Ray(Vec3(), Vec3::Up());
+
+			Assert::IsTrue(ray.At(1.0f) == Vec3(0.0f, 1.0f, 0.0f));
+			Assert::IsTrue(ray.At(-1.0f) == Vec3(0.0f, -1.0f, 0.0f));
+			Assert::IsTrue(ray.At(2.0f) == Vec3(0.0f, 2.0f, 0.0f));
 		}
 		
 	};
