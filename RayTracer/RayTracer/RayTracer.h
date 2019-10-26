@@ -6,6 +6,7 @@
 #include "Utilities.h"
 #include "Ray.h"
 #include "Hitable.h"
+#include "Camera.h"
 
 std::string CreatePPMHeader(int width, int height);
 void PrintRGB(float r, float g, float b, std::ostream& stream);

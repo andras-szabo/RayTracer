@@ -110,7 +110,7 @@ bool Sphere::Raycast(const Ray& ray, OUT HitInfo& hitInfo) const
 		hitInfo.normal = (hitInfo.point - origin).Normalize();
 	}
 
-	return t > 0.0f;
+	return t > 0.001f;
 }
 
 bool HitableList::Raycast(const Ray& ray, OUT HitInfo& hitInfo) const
@@ -140,10 +140,22 @@ bool HitableList::Raycast(const Ray& ray, OUT HitInfo& hitInfo) const
 	return false;
 }
 
-int HitableList::Add(AHitable* hitablePtr)
+HitableList::~HitableList()
 {
-	hitables.push_back(hitablePtr);
+	for (auto& ptr : hitables)
+	{
+		delete ptr;
+	} 
+}
+
+int HitableList::AddSphere(const Vec3& origin, float radius)
+{
+	hitables.push_back(new Sphere(origin, radius));
 	return hitables.size();
 }
 
-
+int HitableList::AddTriangle(const Vec3& a, const Vec3& b, const Vec3& c)
+{
+	hitables.push_back(new Triangle(a, b, c));
+	return hitables.size();
+}

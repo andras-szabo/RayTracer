@@ -262,16 +262,12 @@ namespace UnitTests
 		{
 			auto hl = HitableList();
 
-			Sphere s1(Vec3(), 2.0f);
-			Sphere s2(Vec3(100.0f, 100.0f, 100.0f), 42.0f);
-
-			hl.Add(&s1);
-			hl.Add(&s2);
+			hl.AddSphere(Vec3(), 2.0f);
+			hl.AddSphere(Vec3(100.0f, 100.0f, 100.0f), 42.0f);
 
 			Assert::IsTrue(hl.Count() == 2);
 
-			Triangle tri(Vec3(10.0f, 10.0f, 10.0f), Vec3(10.0f, 12.0f, 10.0f), Vec3(14.0f, 8.0f, 14.0f));
-			hl.Add(&tri);
+			hl.AddTriangle(Vec3(10.0f, 10.0f, 10.0f), Vec3(10.0f, 12.0f, 10.0f), Vec3(14.0f, 8.0f, 14.0f));
 
 			Assert::IsTrue(hl.Count() == 3);
 

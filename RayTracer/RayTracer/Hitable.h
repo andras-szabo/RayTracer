@@ -22,6 +22,8 @@ public:
 class AHitable
 {
 public:
+	virtual ~AHitable() = default;
+
 	virtual bool Raycast(const Ray& ray, OUT HitInfo& hitInfo) const = 0;
 	HitableType GetType() const { return type; }
 
@@ -85,7 +87,11 @@ private:
 class HitableList
 {
 public:
-	int Add(AHitable* hitable);
+	~HitableList();
+
+	int AddSphere(const Vec3& origin, float radius);
+	int AddTriangle(const Vec3& a, const Vec3& b, const Vec3& c);
+
 	int Count() const { return hitables.size(); }
 	bool Raycast(const Ray& ray, OUT HitInfo& hit) const;
 
