@@ -59,21 +59,33 @@ void AddIndices(Mesh* mesh, int a, int b, int c)
 	mesh->indices.push_back(c);
 }
 
+void CreateI(MeshStorage* storage)
+{
+	auto mesh = storage->Create("I");
+	mesh->vertices.push_back(Vec3(0.0f, 0.0f, 0.5f));					// 0
+	mesh->vertices.push_back(Vec3(0.0f, 1.6f, 0.0f));	// 1
+	mesh->vertices.push_back(Vec3(0.2f, 1.6f, 0.0f));	// 2
+	mesh->vertices.push_back(Vec3(0.2f, 0.0f, 0.5f));	// 3
+
+	AddIndices(mesh, 0, 1, 2);
+	AddIndices(mesh, 0, 2, 3);
+}
+
 void CreateX(MeshStorage* storage)
 {
 	auto mesh = storage->Create("X");
-	mesh->vertices.push_back(Vec3(0.0f, 0.0f, 0.0f));	// 0
-	mesh->vertices.push_back(Vec3(0.4f, 0.8f, 0.0f));	// 1
-	mesh->vertices.push_back(Vec3(0.5f, 0.7f, 0.0f));	// 2	
-	mesh->vertices.push_back(Vec3(0.1f, 0.0f, 0.0f));	// 3
+	mesh->vertices.push_back(Vec3(0.0f, 0.0f, 0.5f));	// 0
+	mesh->vertices.push_back(Vec3(0.4f, 0.8f, 0.25f));	// 1
+	mesh->vertices.push_back(Vec3(0.5f, 0.7f, 0.3f));	// 2	
+	mesh->vertices.push_back(Vec3(0.1f, 0.0f, 0.5f));	// 3
 	mesh->vertices.push_back(Vec3(0.0f, 1.6f, 0.0f));	// 4
 	mesh->vertices.push_back(Vec3(0.1f, 1.6f, 0.0f));	// 5
-	mesh->vertices.push_back(Vec3(0.5f, 0.9f, 0.0f));	// 6
+	mesh->vertices.push_back(Vec3(0.5f, 0.9f, 0.2f));	// 6
 	mesh->vertices.push_back(Vec3(0.9f, 1.6f, 0.0f));	// 7
 	mesh->vertices.push_back(Vec3(1.0f, 1.6f, 0.0f));	// 8
-	mesh->vertices.push_back(Vec3(0.6f, 0.8f, 0.0f));	// 9
-	mesh->vertices.push_back(Vec3(1.0f, 0.0f, 0.0f));	// 10
-	mesh->vertices.push_back(Vec3(0.9f, 0.0f, 0.0f));	// 11
+	mesh->vertices.push_back(Vec3(0.6f, 0.8f, 0.25f));	// 9
+	mesh->vertices.push_back(Vec3(1.0f, 0.0f, 0.5f));	// 10
+	mesh->vertices.push_back(Vec3(0.9f, 0.0f, 0.5f));	// 11
 
 	AddIndices(mesh, 0, 1, 2);	
 	AddIndices(mesh, 0, 2, 3);	// left leg
@@ -93,20 +105,23 @@ std::unique_ptr<HitableList> MakeWorld(MaterialStorage* matStorage, MeshStorage*
 	matStorage->CreateDiffuseMaterial("green", Vec3(0.3f, 1.0f, 0.3f), 0.7f);
 	matStorage->CreateDiffuseMaterial("red", Vec3(1.0f, 0.3f, 0.3f), 0.8f);
 
-	matStorage->CreateMetallicMaterial("mirror", Vec3(1.0f, 1.0f, 1.0f));
+	matStorage->CreateMetallicMaterial("mirror", Vec3(0.7f, 0.7f, 1.0f));
 	matStorage->CreateMetallicMaterial("brass", Vec3(0.8f, 0.6f, 0.5f));
 
 	CreateX(meshStorage);
+	CreateI(meshStorage);
 
 	auto worldPtr = std::make_unique<HitableList>();
 
-	//worldPtr->AddSphere(Vec3(0.0f, 0.0f, 2.0f), 0.5f, matStorage->Get("mirror"));
+	worldPtr->AddSphere(Vec3(0.1f, -0.2f, 1.8f), 0.28f, matStorage->Get("blue"));
 	worldPtr->AddSphere(Vec3(0.0f, -100.0f, 2.0f), 99.5f, matStorage->Get("green"));
 	worldPtr->AddSphere(Vec3(1.0f, -0.25f, 2.0f), 0.25f, matStorage->Get("red"));
 	worldPtr->AddSphere(Vec3(-1.0f, 0.0f, 2.0f), 0.45f, matStorage->Get("brass"));
 
-	worldPtr->AddMesh(meshStorage->Get("X"), matStorage->Get("red"), Vec3(-1.0f, 0.0f, 3.0f));
-	//worldPtr->AddTriangle(Vec3(1.0f, 0.0f, 3.0f), Vec3(1.2f, 0.5f, 2.25f), Vec3(1.5f, 0.25f, 2.0f), matStorage->Get("blue"));
+	worldPtr->AddMesh(meshStorage->Get("X"), matStorage->Get("mirror"), Vec3(-0.9f, 0.0f, 3.0f));
+	worldPtr->AddMesh(meshStorage->Get("I"), matStorage->Get("mirror"), Vec3(0.1f, 0.0f, 3.0f));
+	worldPtr->AddMesh(meshStorage->Get("I"), matStorage->Get("mirror"), Vec3(0.4f, 0.0f, 3.0f));
+	worldPtr->AddMesh(meshStorage->Get("I"), matStorage->Get("mirror"), Vec3(0.7f, 0.0f, 3.0f));
 
 	return worldPtr;
 }
