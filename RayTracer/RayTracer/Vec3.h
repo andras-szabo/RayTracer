@@ -60,6 +60,7 @@ public:
 		return Vec3(val[0] - other.val[0], val[1] - other.val[1], val[2] - other.val[2]);
 	}
 
+
 	inline Vec3 operator*(float scalar) const
 	{
 		return Vec3(val[0] * scalar, val[1] * scalar, val[2] * scalar);
@@ -139,6 +140,12 @@ public:
 private:
 	float val[3];
 };
+
+inline Vec3 operator*(const Vec3& a, const Vec3& b)
+{
+	return Vec3(a.x() * b.x(), a.y() * b.y(), a.z() * b.z());
+}
+
 
 inline std::ostream& operator<<(std::ostream& stream, const Vec3& v)
 {

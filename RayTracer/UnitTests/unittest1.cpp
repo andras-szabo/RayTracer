@@ -185,6 +185,17 @@ namespace UnitTests
 			Assert::IsTrue(bXa == Vec3(1.0f, 0.0f, 0.0f));
 		}
 
+		TEST_METHOD(Vec3Mul)
+		{
+			Vec3 a;
+			Vec3 b(1.0, 2.0f, 3.0f);
+			Vec3 c(2.0, 0.0f, 5.0f);
+
+			Assert::IsTrue(a * b == Vec3());
+			Assert::IsTrue(b * a == Vec3());
+			Assert::IsTrue(b * c == Vec3(2.0f, 0.0f, 15.0f));
+		}
+
 		TEST_METHOD(RayBasicTests)
 		{
 			auto ray = Ray(Vec3(), Vec3::Up());
@@ -220,7 +231,7 @@ namespace UnitTests
 		
 		TEST_METHOD(SphereBasicTests)
 		{
-			auto s = Sphere(Vec3(), 2.0f);
+			auto s = Sphere(Vec3(), 2.0f, nullptr);
 			Assert::IsTrue(s.Radius() == 2.0f);
 			Assert::IsTrue(s.Origin() == Vec3());
 
@@ -244,7 +255,7 @@ namespace UnitTests
 
 		TEST_METHOD(SphereBackfaceTest)
 		{
-			auto s = Sphere(Vec3(), 2.0f);
+			auto s = Sphere(Vec3(), 2.0f, nullptr);
 			auto r = Ray(Vec3(), Vec3::Forward());
 			auto hitInfo = HitInfo();
 			bool isHit = s.Raycast(r, OUT hitInfo);
@@ -262,12 +273,12 @@ namespace UnitTests
 		{
 			auto hl = HitableList();
 
-			hl.AddSphere(Vec3(), 2.0f);
-			hl.AddSphere(Vec3(100.0f, 100.0f, 100.0f), 42.0f);
+			hl.AddSphere(Vec3(), 2.0f, nullptr);
+			hl.AddSphere(Vec3(100.0f, 100.0f, 100.0f), 42.0f, nullptr);
 
 			Assert::IsTrue(hl.Count() == 2);
 
-			hl.AddTriangle(Vec3(10.0f, 10.0f, 10.0f), Vec3(10.0f, 12.0f, 10.0f), Vec3(14.0f, 8.0f, 14.0f));
+			hl.AddTriangle(Vec3(10.0f, 10.0f, 10.0f), Vec3(10.0f, 12.0f, 10.0f), Vec3(14.0f, 8.0f, 14.0f), nullptr);
 
 			Assert::IsTrue(hl.Count() == 3);
 

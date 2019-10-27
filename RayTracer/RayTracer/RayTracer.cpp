@@ -2,8 +2,27 @@
 #include "RayTracer.h"
 #include <memory>
 
-int main()
+const int DEFAULT_MAX_DEPTH = 32;
+const int DEFAULT_SAMPLE_COUNT = 100;
+const int DEFAULT_SAME_SAMPLE_LIMIT = 5;
+
+int sampleCount = DEFAULT_SAMPLE_COUNT;
+int maxDepth = DEFAULT_MAX_DEPTH;
+
+int main(int argc, char* argv[])
 {
+	if (argc > 1)
+	{
+		sampleCount = std::stoi(argv[1]);
+	}
+
+	if (argc > 2)
+	{
+		maxDepth = std::stoi(argv[2]);
+	}
+
+	std::cout << "Taking " << sampleCount << " samples per pixel; max depth: " << maxDepth << std::endl;
+
 	Stopwatch s("Main", true);
 	OutputFile imageFile("test.ppm");
 	PrintSimpleWorldTestTo(320, 200, imageFile.GetStream());
@@ -33,12 +52,21 @@ void PrintSimpleBackgroundTestTo(int width, int height, std::ostream& stream)
 	}
 }
 
-std::unique_ptr<HitableList> MakeWorld()
+std::unique_ptr<HitableList> MakeWorld(MaterialStorage* matStorage)
 {
+	matStorage->CreateDiffuseMaterial("blue", Vec3(0.3f, 0.3f, 1.0f), 0.9f);
+	matStorage->CreateDiffuseMaterial("green", Vec3(0.3f, 1.0f, 0.3f), 0.7f);
+	matStorage->CreateDiffuseMaterial("red", Vec3(1.0f, 0.3f, 0.3f), 0.8f);
+
+	matStorage->CreateMetallicMaterial("mirror", Vec3(1.0f, 1.0f, 1.0f));
+	matStorage->CreateMetallicMaterial("brass", Vec3(0.8f, 0.6f, 0.5f));
+
 	auto worldPtr = std::make_unique<HitableList>();
 
-	worldPtr->AddSphere(Vec3(0.0f, 0.0f, 2.0f), 0.5f);
-	worldPtr->AddSphere(Vec3(0.0f, -100.0f, 2.0f), 99.5f);
+	worldPtr->AddSphere(Vec3(0.0f, 0.0f, 2.0f), 0.5f, matStorage->Get("mirror"));
+	worldPtr->AddSphere(Vec3(0.0f, -100.0f, 2.0f), 99.5f, matStorage->Get("green"));
+	worldPtr->AddSphere(Vec3(1.0f, -0.25f, 2.0f), 0.25f, matStorage->Get("red"));
+	worldPtr->AddSphere(Vec3(-1.0f, 0.0f, 2.0f), 0.45f, matStorage->Get("brass"));
 
 	return worldPtr;
 }
@@ -71,7 +99,35 @@ Vec3 GetRandomUnitVector()
 	return p;
 }
 
-const int MAX_DEPTH = 10;
+
+Vec3 SampleRecursiveWithMaterial(const Ray& ray, HitableList* world, int depth)
+{
+	static HitInfo hit;
+	static Vec3 missVectorVisualA{ 1.0f, 1.0f, 1.0f };
+	static Vec3 missVectorVisualB{ 0.5f, 0.7f, 1.0f };
+
+	depth += 1;
+	if (depth < maxDepth)
+	{
+		if (world->Raycast(ray, OUT hit))
+		{
+			Ray scattered;
+			Vec3 attenuation;
+			if (hit.materialPtr->DoesScatter(ray, hit, attenuation, scattered))
+			{
+				return attenuation * SampleRecursiveWithMaterial(scattered, world, depth);
+			}
+			else
+			{
+				return Vec3();
+			}
+		}
+	}
+
+	Vec3 unitVector = ray.Direction() / ray.Direction().Length();
+	float t = 0.5f * (unitVector.y() + 1.0f);
+	return Vec3::Lerp(missVectorVisualA, missVectorVisualB, t);
+}
 
 Vec3 SampleRecursive(const Ray& ray, HitableList* world, int depth = 0)
 {
@@ -80,7 +136,7 @@ Vec3 SampleRecursive(const Ray& ray, HitableList* world, int depth = 0)
 	static Vec3 missVectorVisualB{ 0.5f, 0.7f, 1.0f };
 
 	depth += 1;
-	if (depth < MAX_DEPTH)
+	if (depth < DEFAULT_MAX_DEPTH)
 	{
 		if (world->Raycast(ray, OUT hit))
 		{
@@ -115,12 +171,11 @@ Vec3 Sample(const Ray& ray, HitableList* world)
 
 void PrintSimpleWorldTestTo(int width, int height, std::ostream& stream)
 {
-	const int sampleCount = 32;
-	const int sameSampleLimit = 5;
-
 	stream << CreatePPMHeader(320, 200);
 
-	auto world = MakeWorld();
+	auto materials = std::make_unique<MaterialStorage>();
+
+	auto world = MakeWorld(materials.get());
 	auto worldPtr = world.get();
 	auto camera = MakeCamera(width, height);
 
@@ -144,12 +199,12 @@ void PrintSimpleWorldTestTo(int width, int height, std::ostream& stream)
 				float v = float(j + Rand01()) / (float)height;
 				auto ray = camera.GetRay(u, v);
 
-				Vec3 sampledColor = SampleRecursive(ray, worldPtr);
+				Vec3 sampledColor = SampleRecursiveWithMaterial(ray, worldPtr, 0);
 
 				if (sampledColor == previousSampleColour)
 				{
 					sameSampleResultCount++;
-					if (sameSampleResultCount >= sameSampleLimit)
+					if (sameSampleResultCount >= DEFAULT_SAME_SAMPLE_LIMIT)
 					{
 						shouldContinue = false;
 					}
@@ -177,8 +232,10 @@ void PrintSimpleSphereTestTo(int width, int height, std::ostream & stream)
 	float u = unitWidth / width;
 	float v = unitHeight / height;
 
+	DiffuseMaterial material("foo", Vec3(1.0f, 0.5f, 0.5f), 0.8f);
+
 	Vec3 screenLowerLeft(-(float)unitWidth / 2.0f, -(float)unitHeight / 2.0f, 1.0f);
-	Sphere sphere(Vec3(0.0f, 0.5f, 1.0f), 0.5f);
+	Sphere sphere(Vec3(0.0f, 0.5f, 1.0f), 0.5f, &material);
 
 	stream << CreatePPMHeader(width, height);
 

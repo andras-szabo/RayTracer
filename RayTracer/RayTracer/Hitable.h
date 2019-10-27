@@ -4,6 +4,8 @@
 
 #define OUT
 
+struct AMaterial;
+
 enum class HitableType
 {
 	None,
@@ -16,6 +18,7 @@ class HitInfo
 public:
 	Vec3 point;
 	Vec3 normal;
+	AMaterial* materialPtr;
 	bool ignoreBackFaces = true;
 };
 
@@ -26,9 +29,11 @@ public:
 
 	virtual bool Raycast(const Ray& ray, OUT HitInfo& hitInfo) const = 0;
 	HitableType GetType() const { return type; }
+	AMaterial* GetMaterial() { return material; }
 
 protected:
 	HitableType type;
+	AMaterial* material = nullptr;
 };
 
 class Triangle : public AHitable
@@ -63,9 +68,10 @@ private:
 class Sphere : public AHitable
 {
 public:
-	Sphere(const Vec3& origin, float radius) : origin{ origin }, radius{ radius } 
+	Sphere(const Vec3& origin, float radius, AMaterial* mat) : origin{ origin }, radius{ radius } 
 	{ 
 		type = HitableType::Sphere;
+		material = mat;
 		squaredRadius = radius * radius; 
 	}
 
@@ -89,8 +95,8 @@ class HitableList
 public:
 	~HitableList();
 
-	int AddSphere(const Vec3& origin, float radius);
-	int AddTriangle(const Vec3& a, const Vec3& b, const Vec3& c);
+	int AddSphere(const Vec3& origin, float radius, AMaterial* material);
+	int AddTriangle(const Vec3& a, const Vec3& b, const Vec3& c, AMaterial* material);
 
 	int Count() const { return hitables.size(); }
 	bool Raycast(const Ray& ray, OUT HitInfo& hit) const;
@@ -98,3 +104,4 @@ public:
 private:
 	std::vector<AHitable*> hitables;
 };
+

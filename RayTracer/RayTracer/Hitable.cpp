@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Hitable.h"
 
-const float EPSILON = 0.000001;
+const float EPSILON = 0.000001f;
 
 bool Triangle::Raycast(const Ray& ray, OUT HitInfo& hitInfo) const
 {
@@ -41,6 +41,7 @@ bool Triangle::Raycast(const Ray& ray, OUT HitInfo& hitInfo) const
 	{
 		hitInfo.point = ray.At(t);
 		hitInfo.normal = normal;
+		hitInfo.materialPtr = material;
 
 		return true;
 	}
@@ -108,6 +109,7 @@ bool Sphere::Raycast(const Ray& ray, OUT HitInfo& hitInfo) const
 
 		hitInfo.point = ray.At(t);
 		hitInfo.normal = (hitInfo.point - origin).Normalize();
+		hitInfo.materialPtr = material;
 	}
 
 	return t > 0.001f;
@@ -148,13 +150,13 @@ HitableList::~HitableList()
 	} 
 }
 
-int HitableList::AddSphere(const Vec3& origin, float radius)
+int HitableList::AddSphere(const Vec3& origin, float radius, AMaterial* material)
 {
-	hitables.push_back(new Sphere(origin, radius));
+	hitables.push_back(new Sphere(origin, radius, material));
 	return hitables.size();
 }
 
-int HitableList::AddTriangle(const Vec3& a, const Vec3& b, const Vec3& c)
+int HitableList::AddTriangle(const Vec3& a, const Vec3& b, const Vec3& c, AMaterial* material)
 {
 	hitables.push_back(new Triangle(a, b, c));
 	return hitables.size();
