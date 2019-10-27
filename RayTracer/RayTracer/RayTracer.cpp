@@ -38,7 +38,7 @@ std::unique_ptr<HitableList> MakeWorld()
 	auto worldPtr = std::make_unique<HitableList>();
 
 	worldPtr->AddSphere(Vec3(0.0f, 0.0f, 2.0f), 0.5f);
-	worldPtr->AddSphere(Vec3(0.0f, -101.0f, 2.0f), 100.0f);
+	worldPtr->AddSphere(Vec3(0.0f, -100.0f, 2.0f), 99.5f);
 
 	return worldPtr;
 }
@@ -63,13 +63,15 @@ Vec3 GetRandomUnitVector()
 
 	do
 	{
-		p = Vec3(Rand01() - 1.0f, Rand01() - 1.0f, Rand01() - 1.0f) * 2.0f;
-	} while (p.SqrMagnitude() >= 1.0f);
+		p = Vec3(Rand01() * 2.0f - 1.0f,
+				 Rand01() * 2.0f - 1.0f,
+				 Rand01() * 2.0f - 1.0f);
+	} while (p.SqrMagnitude() > 1.0f);
 
 	return p;
 }
 
-const int MAX_DEPTH = 100;
+const int MAX_DEPTH = 10;
 
 Vec3 SampleRecursive(const Ray& ray, HitableList* world, int depth = 0)
 {
@@ -113,7 +115,8 @@ Vec3 Sample(const Ray& ray, HitableList* world)
 
 void PrintSimpleWorldTestTo(int width, int height, std::ostream& stream)
 {
-	const int sampleCount = 320;
+	const int sampleCount = 32;
+	const int sameSampleLimit = 5;
 
 	stream << CreatePPMHeader(320, 200);
 
@@ -126,15 +129,41 @@ void PrintSimpleWorldTestTo(int width, int height, std::ostream& stream)
 		for (int i = 0; i < width; ++i)
 		{
 			Vec3 pixelColor;
-			for (int k = 0; k < sampleCount; ++k)
+			Vec3 previousSampleColour;
+			int sameSampleResultCount = 1;
+
+			int samplesTaken;
+			bool shouldContinue = true;
+
+			// If we get back the same colour for "n" samples, then stop
+			// shooting and taking samples.
+
+			for (samplesTaken = 0; shouldContinue && samplesTaken < sampleCount; ++samplesTaken)
 			{
 				float u = float(i + Rand01()) / (float)width;
 				float v = float(j + Rand01()) / (float)height;
 				auto ray = camera.GetRay(u, v);
-				//pixelColor += Sample(ray, worldPtr);
-				pixelColor += SampleRecursive(ray, worldPtr);
+
+				Vec3 sampledColor = SampleRecursive(ray, worldPtr);
+
+				if (sampledColor == previousSampleColour)
+				{
+					sameSampleResultCount++;
+					if (sameSampleResultCount >= sameSampleLimit)
+					{
+						shouldContinue = false;
+					}
+				}
+				else
+				{
+					previousSampleColour = sampledColor;
+					sameSampleResultCount = 1;
+				}
+
+				pixelColor += sampledColor;
 			}
-			(pixelColor / (float)sampleCount).PrintRGB(stream);
+
+			(pixelColor / (float)samplesTaken).PrintRGB(stream);
 		}
 	}
 }
