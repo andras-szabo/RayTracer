@@ -5,6 +5,7 @@
 #define OUT
 
 struct AMaterial;
+class Mesh;
 
 enum class HitableType
 {
@@ -39,9 +40,10 @@ protected:
 class Triangle : public AHitable
 {
 public:
-	Triangle(const Vec3& a, const Vec3& b, const Vec3& c) : a{ a }, b{ b }, c{ c }
+	Triangle(const Vec3& a, const Vec3& b, const Vec3& c, AMaterial* mat) : a{ a }, b{ b }, c{ c }
 	{
 		type = HitableType::Triangle;
+		material = mat;
 
 		edgeAB = b - a;
 		edgeAC = c - a;
@@ -95,6 +97,7 @@ class HitableList
 public:
 	~HitableList();
 
+	int AddMesh(Mesh* meshPtr, AMaterial* material, const Vec3& worldOffset);
 	int AddSphere(const Vec3& origin, float radius, AMaterial* material);
 	int AddTriangle(const Vec3& a, const Vec3& b, const Vec3& c, AMaterial* material);
 

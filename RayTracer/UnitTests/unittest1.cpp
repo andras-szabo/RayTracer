@@ -207,7 +207,7 @@ namespace UnitTests
 
 		TEST_METHOD(TriangleBasicTests)
 		{
-			auto tri = Triangle(Vec3(), Vec3(0.0f, 1.0f, 0.0f), Vec3(1.0f, 0.5f, 0.0f));
+			auto tri = Triangle(Vec3(), Vec3(0.0f, 1.0f, 0.0f), Vec3(1.0f, 0.5f, 0.0f), nullptr);
 			auto ray = Ray(Vec3(0.0f, 0.0f, -5.0f), Vec3::Forward());
 			auto hitInfo = HitInfo();
 			bool isHit = tri.Raycast(ray, OUT hitInfo);
@@ -219,7 +219,7 @@ namespace UnitTests
 
 		TEST_METHOD(TriangleBackfaceTest)
 		{
-			auto tri = Triangle(Vec3(), Vec3(0.0f, 1.0f, 0.0f), Vec3(1.0f, 0.5f, 0.0f));
+			auto tri = Triangle(Vec3(), Vec3(0.0f, 1.0f, 0.0f), Vec3(1.0f, 0.5f, 0.0f), nullptr);
 			auto ray = Ray(Vec3(0.0f, 0.0f, 5.0f), -Vec3::Forward());
 			auto hitInfo = HitInfo();
 			bool isHit = tri.Raycast(ray, OUT hitInfo);

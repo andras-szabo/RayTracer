@@ -3,8 +3,8 @@
 #include <memory>
 
 const int DEFAULT_MAX_DEPTH = 32;
-const int DEFAULT_SAMPLE_COUNT = 100;
-const int DEFAULT_SAME_SAMPLE_LIMIT = 5;
+const int DEFAULT_SAMPLE_COUNT = 10;
+const int DEFAULT_SAME_SAMPLE_LIMIT = 12;
 
 int sampleCount = DEFAULT_SAMPLE_COUNT;
 int maxDepth = DEFAULT_MAX_DEPTH;
@@ -52,7 +52,42 @@ void PrintSimpleBackgroundTestTo(int width, int height, std::ostream& stream)
 	}
 }
 
-std::unique_ptr<HitableList> MakeWorld(MaterialStorage* matStorage)
+void AddIndices(Mesh* mesh, int a, int b, int c)
+{
+	mesh->indices.push_back(a);
+	mesh->indices.push_back(b);
+	mesh->indices.push_back(c);
+}
+
+void CreateX(MeshStorage* storage)
+{
+	auto mesh = storage->Create("X");
+	mesh->vertices.push_back(Vec3(0.0f, 0.0f, 0.0f));	// 0
+	mesh->vertices.push_back(Vec3(0.4f, 0.8f, 0.0f));	// 1
+	mesh->vertices.push_back(Vec3(0.5f, 0.7f, 0.0f));	// 2	
+	mesh->vertices.push_back(Vec3(0.1f, 0.0f, 0.0f));	// 3
+	mesh->vertices.push_back(Vec3(0.0f, 1.6f, 0.0f));	// 4
+	mesh->vertices.push_back(Vec3(0.1f, 1.6f, 0.0f));	// 5
+	mesh->vertices.push_back(Vec3(0.5f, 0.9f, 0.0f));	// 6
+	mesh->vertices.push_back(Vec3(0.9f, 1.6f, 0.0f));	// 7
+	mesh->vertices.push_back(Vec3(1.0f, 1.6f, 0.0f));	// 8
+	mesh->vertices.push_back(Vec3(0.6f, 0.8f, 0.0f));	// 9
+	mesh->vertices.push_back(Vec3(1.0f, 0.0f, 0.0f));	// 10
+	mesh->vertices.push_back(Vec3(0.9f, 0.0f, 0.0f));	// 11
+
+	AddIndices(mesh, 0, 1, 2);	
+	AddIndices(mesh, 0, 2, 3);	// left leg
+	AddIndices(mesh, 2, 1, 6);
+	AddIndices(mesh, 2, 6, 9);	// centre bit
+	AddIndices(mesh, 1, 4, 5);
+	AddIndices(mesh, 1, 5, 6);  // left arm
+	AddIndices(mesh, 6, 7, 8);
+	AddIndices(mesh, 6, 8, 9);  // right arm
+	AddIndices(mesh, 2, 9, 11);
+	AddIndices(mesh, 11, 9, 10); // right leg
+}
+
+std::unique_ptr<HitableList> MakeWorld(MaterialStorage* matStorage, MeshStorage* meshStorage)
 {
 	matStorage->CreateDiffuseMaterial("blue", Vec3(0.3f, 0.3f, 1.0f), 0.9f);
 	matStorage->CreateDiffuseMaterial("green", Vec3(0.3f, 1.0f, 0.3f), 0.7f);
@@ -61,12 +96,17 @@ std::unique_ptr<HitableList> MakeWorld(MaterialStorage* matStorage)
 	matStorage->CreateMetallicMaterial("mirror", Vec3(1.0f, 1.0f, 1.0f));
 	matStorage->CreateMetallicMaterial("brass", Vec3(0.8f, 0.6f, 0.5f));
 
+	CreateX(meshStorage);
+
 	auto worldPtr = std::make_unique<HitableList>();
 
-	worldPtr->AddSphere(Vec3(0.0f, 0.0f, 2.0f), 0.5f, matStorage->Get("mirror"));
+	//worldPtr->AddSphere(Vec3(0.0f, 0.0f, 2.0f), 0.5f, matStorage->Get("mirror"));
 	worldPtr->AddSphere(Vec3(0.0f, -100.0f, 2.0f), 99.5f, matStorage->Get("green"));
 	worldPtr->AddSphere(Vec3(1.0f, -0.25f, 2.0f), 0.25f, matStorage->Get("red"));
 	worldPtr->AddSphere(Vec3(-1.0f, 0.0f, 2.0f), 0.45f, matStorage->Get("brass"));
+
+	worldPtr->AddMesh(meshStorage->Get("X"), matStorage->Get("red"), Vec3(-1.0f, 0.0f, 3.0f));
+	//worldPtr->AddTriangle(Vec3(1.0f, 0.0f, 3.0f), Vec3(1.2f, 0.5f, 2.25f), Vec3(1.5f, 0.25f, 2.0f), matStorage->Get("blue"));
 
 	return worldPtr;
 }
@@ -174,8 +214,9 @@ void PrintSimpleWorldTestTo(int width, int height, std::ostream& stream)
 	stream << CreatePPMHeader(320, 200);
 
 	auto materials = std::make_unique<MaterialStorage>();
+	auto meshes = std::make_unique<MeshStorage>();
 
-	auto world = MakeWorld(materials.get());
+	auto world = MakeWorld(materials.get(), meshes.get());
 	auto worldPtr = world.get();
 	auto camera = MakeCamera(width, height);
 
@@ -287,8 +328,10 @@ void PrintSimpleTriangleTestTo(int width, int height, std::ostream & stream)
 	float u = unitWidth / width;
 	float v = unitHeight / height;
 
+	DiffuseMaterial mat("foo", Vec3(1.0f, 0.4f, 0.4f), 0.9f);
+
 	Vec3 screenLowerLeft(-(float)unitWidth / 2.0f, -(float)unitHeight / 2.0f, 1.0f);
-	Triangle tri(Vec3(0.2f, 0.0f, 1.0f), Vec3(0.0f, 1.0f, 1.0f), Vec3(1.0f, 0.5f, 1.0f));
+	Triangle tri(Vec3(0.2f, 0.0f, 1.0f), Vec3(0.0f, 1.0f, 1.0f), Vec3(1.0f, 0.5f, 1.0f), &mat);
 
 	stream << CreatePPMHeader(width, height);
 	HitInfo hit;

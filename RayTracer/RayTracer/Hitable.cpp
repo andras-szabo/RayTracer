@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Hitable.h"
+#include "Mesh.h"
 
 const float EPSILON = 0.000001f;
 
@@ -158,6 +159,19 @@ int HitableList::AddSphere(const Vec3& origin, float radius, AMaterial* material
 
 int HitableList::AddTriangle(const Vec3& a, const Vec3& b, const Vec3& c, AMaterial* material)
 {
-	hitables.push_back(new Triangle(a, b, c));
+	hitables.push_back(new Triangle(a, b, c, material));
+	return hitables.size();
+}
+
+int HitableList::AddMesh(Mesh* meshPtr, AMaterial* material, const Vec3& worldOffset)
+{
+	for (const auto& triangle : meshPtr->GetTriangles(material))
+	{
+		Vec3 a = triangle.A() + worldOffset;
+		Vec3 b = triangle.B() + worldOffset;
+		Vec3 c = triangle.C() + worldOffset;
+		hitables.push_back(new Triangle(a, b, c, material));
+	}
+
 	return hitables.size();
 }
